@@ -20,7 +20,7 @@ defmodule Iri.MixProject do
   def application do
     [
       mod: {Iri.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :corsica]
     ]
   end
 
@@ -45,7 +45,7 @@ defmodule Iri.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:castore, "~> 0.1.0"},
       {:mint, "~> 1.0"},
-      {:timex, "~> 3.0"}
+      {:corsica, "~> 1.0"}
     ]
   end
 
