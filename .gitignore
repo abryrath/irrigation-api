@@ -37,3 +37,4 @@ npm-debug.log
 env.sh
 .elixir_ls/
 node_modules/
+*.log
