@@ -14,10 +14,13 @@ defmodule IriWeb.Router do
   end
 
   scope "/", IriWeb do
-    pipe_through :browser
+    pipe_through :api
 
-    get "/", PageController, :index
+    get "/records/latest", RecordsController, :latest
     get "/forecast/today", ForecastController, :today
+
+    post "/sprinkler/default", SprinklerController, :default
+    post "/sprinkler/custom", SprinklerController, :custom
   end
 
   # Other scopes may use custom stacks.
