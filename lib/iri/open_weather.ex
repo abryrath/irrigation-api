@@ -1,7 +1,6 @@
 defmodule Iri.OpenWeather do
   # import Ecto.Date
-  alias Iri.Forecast
-  alias Iri.Repo
+  alias Iri.{Forecast,Repo,Date}
 
   import Ecto.Query
 
@@ -24,22 +23,25 @@ defmodule Iri.OpenWeather do
       case get_today_from_repo() do
         nil ->
           api_get()
-          |> parse_resp
-          |> Forecast.from_resp()
-          |> Repo.insert!()
+          |> parse_resp()
 
         result ->
           result
       end
 
+    IO.inspect(forecast)
     forecast
   end
 
   def get_today_from_repo() do
+    {{year, month, day}, _} = :calendar.universal_time()
+
     query =
-      from f in Forecast,
-        where: f.inserted_at >= datetime_add(^NaiveDateTime.utc_now(), -1, "day"),
-        select: f
+      from d in Date,
+        where: d.year == ^year and d.month == ^month and d.day == ^day,
+        preload: :forecasts,
+        limit: 1,
+        select: d
 
     Repo.one(query)
   end
@@ -63,6 +65,30 @@ defmodule Iri.OpenWeather do
     # IO.inspect(responses)
     [{:status, _, 200}, _headers, data_resp, _done] = responses
     {:data, _, data} = data_resp
-    Jason.decode(data)
+    {:ok, struct} = Jason.decode(data)
+    # only keep the next 5 forecasts
+    %{"list" => list, "city" => city} = struct
+    date = Date.from_resp(city)
+    |> Repo.insert!()
+    # date
+    # # |> Ecto.Schema.build_assoc(:forecasts, forecasts)
+    # |> Repo.insert!()
+
+    forecasts = save_forecasts(list, date)
+
+    get_today_from_repo()
+  end
+
+  defp save_forecasts(input, date, forecasts \\ [])
+  defp save_forecasts([], _date, forecasts), do: forecasts
+  defp save_forecasts([head|tail], date, forecasts) do
+    case Forecast.from_resp(head, date) do
+      {:ok, forecast} ->
+        Repo.insert!(forecast)
+        save_forecasts(tail, date, [forecast|forecasts])
+      {:err, reason} ->
+        IO.puts reason
+        save_forecasts(tail, date, forecasts)
+    end
   end
 end

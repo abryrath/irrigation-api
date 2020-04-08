@@ -45,7 +45,8 @@ defmodule Iri.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:castore, "~> 0.1.0"},
       {:mint, "~> 1.0"},
-      {:corsica, "~> 1.0"}
+      {:corsica, "~> 1.0"},
+      {:tzdata, "~> 1.0.3"}
     ]
   end
 

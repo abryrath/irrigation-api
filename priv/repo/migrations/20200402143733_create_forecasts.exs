@@ -3,14 +3,16 @@ defmodule Iri.Repo.Migrations.CreateForecasts do
 
   def change do
     create table(:forecasts) do
-      add :list, :text
-      add :sunrise, :naive_datetime
-      add :sunset, :naive_datetime
-      add :lat, :float
-      add :lng, :float
-      add :zipcode, :string
-      add :name, :string
-
+      add :hour, :integer
+      add :humidity, :integer
+      add :temp, :integer
+      add :feels_like, :integer
+      add :description, :string
+      add :summary, :string
+      add :wind_speed, :float
+      add :wind_dir, :integer
+      add :pressure, :integer
+      add :date_id, references(:dates)
       timestamps()
     end
 
